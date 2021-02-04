@@ -263,7 +263,31 @@ namespace Xam.Forms.VideoPlayer.Android
             {
                 string uri = (Element.Source as UriVideoSource).Uri;
 
-                if (!String.IsNullOrWhiteSpace(uri))
+                if (uri.Contains("Bearer="))
+                {
+                    string[] stringSeparators = new string[] { "Bearer=" };
+                    string[] split;
+
+
+                    split = uri.Split(stringSeparators, StringSplitOptions.None);
+
+
+                    if (split != null && split.Length == 2)
+                    {
+                       
+                        string bearer = "Bearer " + split[1];
+                        if (!String.IsNullOrWhiteSpace(split[0]))
+                        {
+                            Dictionary<string, string> RequestHeaders = new Dictionary<string, string>();
+                            RequestHeaders.Add("Authorization", bearer);
+
+                            videoView.SetVideoURI(NSUri.Parse(split[0]), RequestHeaders);
+                            hasSetSource = true;
+                        }
+                    }
+
+                }
+                else if (!String.IsNullOrWhiteSpace(uri))
                 {
                     videoView.SetVideoURI(NSUri.Parse(uri));
                     hasSetSource = true;

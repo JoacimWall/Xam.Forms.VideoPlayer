@@ -170,8 +170,38 @@ namespace Xam.Forms.VideoPlayer.iOS
             if (Element.Source is UriVideoSource)
             {
                 string uri = (Element.Source as UriVideoSource).Uri;
+                if (uri.Contains("Bearer="))
+                {
+                    string[] stringSeparators = new string[] { "Bearer=" };
+                    string[] split;
 
-                if (!String.IsNullOrWhiteSpace(uri))
+
+                    split = uri.Split(stringSeparators, StringSplitOptions.None);
+
+
+                    if (split != null && split.Length == 2)
+                    {
+
+                        string bearer = "Bearer " + split[1];
+                        if (!String.IsNullOrWhiteSpace(split[0]))
+                        {
+                            NSMutableDictionary nativeHeaders = new NSMutableDictionary();
+                            nativeHeaders.Add(new NSString("Authorization"), (NSString)bearer);
+
+                            var nativeHeadersKey = (NSString)"AVURLAssetHTTPHeaderFieldsKey";
+
+                            var options = new AVUrlAssetOptions(NSDictionary.FromObjectAndKey(
+                                nativeHeaders,
+                                nativeHeadersKey
+                            ));
+
+
+                            asset = new AVUrlAsset(new NSUrl(uri), options);
+                        }
+                    }
+
+                }
+                else if (!String.IsNullOrWhiteSpace(uri))
                 {
                     //asset = AVAsset.FromUrl(new NSUrl(uri));
                     NSUrl url = null;
